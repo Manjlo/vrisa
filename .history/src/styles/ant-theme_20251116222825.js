@@ -26,13 +26,13 @@
 export const theme = {
   token: {
     // Seed Tokens
-    colorPrimary: '#4EADF5',
+    colorPrimary: '#3DD5C9',
     colorSuccess: '#43C87B',
     colorWarning: '#F5A623',
     colorError: '#E85151',
-    colorInfo: '#4EADF5',
+    colorInfo: '#3DD5C9',
     colorTextBase: '#252A2E',
-    colorBgBase: '#FFFFFF',
+    colorBgBase: 'white',
     fontFamily: 'Inter var, Inter, "Segoe UI", Roboto, system-ui, -apple-system, sans-serif',
     fontSize: 16,
     borderRadius: 12,

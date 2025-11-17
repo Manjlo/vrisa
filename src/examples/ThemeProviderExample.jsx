@@ -48,15 +48,10 @@ const ThemeProviderExample = () => {
         <Header
           className="app-header--glass"
           style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
             padding: '0 24px',
-            margin: '16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderRadius: '16px',
           }}
         >
           <Title level={3} style={{ color: 'var(--color-text)', margin: 0 }}>
@@ -64,10 +59,10 @@ const ThemeProviderExample = () => {
           </Title>
           <Badge className="badge--ok" status="processing" text="System Normal" />
         </Header>
-        <Content style={{ padding: '0 16px' }}>
+        <Content style={{ padding: '16px' }}>
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
             <Space direction="horizontal" size="large" wrap>
-              <Card title="Metric 1: PM2.5" style={{ width: 300 }} className="card--glass">
+              <Card title="Metric 1: PM2.5" style={{ width: 300 }} className="card--custom">
                 <div className="metric">
                   <span className="metric__value">12.5</span>
                   <span className="metric__label">µg/m³</span>
