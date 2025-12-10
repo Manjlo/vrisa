@@ -1,74 +1,68 @@
 import React from 'react';
 
-const MeasurementsCards = ({ data }) => {
-  // 1. Estado de Carga (Skeleton Loader)
-  if (!data) {
-    return (
-      <div className="p-6 bg-white rounded-lg shadow-sm animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="h-24 bg-gray-200 rounded"></div>
-          <div className="h-24 bg-gray-200 rounded"></div>
-          <div className="h-24 bg-gray-200 rounded"></div>
-          <div className="h-24 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
+const MeasurementsCards = ({ latestData, status }) => {
+  const isOffline = status === 'OFFLINE';
 
-  // 2. Renderizado de Datos
+
+  const findMetric = (possibleNames) => {
+    if (!latestData) return null;
+
+    const dataList = latestData.sensors || (Array.isArray(latestData) ? latestData : []);
+    const keys = Array.isArray(possibleNames) ? possibleNames : [possibleNames];
+    const lowerKeys = keys.map(k => k.toLowerCase());
+    const found = dataList.find(item => {
+      const varName = item.variable || item.name || item.nombre;
+      return varName && lowerKeys.includes(varName.toString().toLowerCase());
+    });
+
+    return found ? (found.value !== undefined ? found.value : found.valor) : null;
+  };
+
+  const getValue = (val) => (isOffline || val === null || val === undefined) ? '--' : val;
+
+  const getCardStyle = (base, text) => {
+    if (isOffline) {
+      return { 
+        container: "bg-gray-50 border-gray-200", 
+        title: "text-gray-400", 
+        value: "text-gray-500", 
+        unit: "text-gray-300" 
+      };
+    }
+    return { 
+      container: `bg-white ${base}`, 
+      title: "text-gray-500", 
+      value: text, 
+      unit: "text-gray-400" 
+    };
+  };
+
+  const metrics = [
+    { label: 'PM2.5', value: findMetric(['PM2.5', 'pm25']), unit: 'µg/m³', color: 'border-green-200', text: 'text-green-600' },
+    { label: 'PM10', value: findMetric(['PM10', 'pm10']), unit: 'µg/m³', color: 'border-green-200', text: 'text-green-600' },
+    { label: 'Temperatura', value: findMetric(['Temperatura', 'Temperature', 'temp']), unit: '°C', color: 'border-orange-200', text: 'text-orange-600' },
+    { label: 'Humedad', value: findMetric(['Humedad', 'Humidity']), unit: '%', color: 'border-blue-200', text: 'text-blue-600' },
+    { label: 'CO', value: findMetric(['CO', 'Monoxido']), unit: 'ppm', color: 'border-gray-200', text: 'text-gray-600' },
+    { label: 'SO2', value: findMetric(['SO2', 'so2']), unit: 'ppb', color: 'border-yellow-200', text: 'text-yellow-600' },
+    { label: 'NO2', value: findMetric(['NO2', 'no2']), unit: 'ppb', color: 'border-red-200', text: 'text-red-600' },
+    { label: 'O3', value: findMetric(['O3', 'Ozono']), unit: 'ppb', color: 'border-blue-200', text: 'text-blue-600' },
+    { label: 'Viento', value: findMetric(['Velocidad Viento', 'Wind Speed', 'velocidad_viento']), unit: 'm/s', color: 'border-purple-200', text: 'text-purple-600' },
+  ];
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">Station Measurements</h2>
-          <p className="text-sm text-gray-500">
-            Estación: <span className="font-medium text-blue-600">{data.station_name}</span>
-          </p>
-        </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-          data.status === 'online' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-        }`}>
-          {data.status}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {data.sensors.map((sensor, index) => {
-          const colorClasses = {
-            green: 'bg-green-50 border-green-200 text-green-800',
-            yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-            orange: 'bg-orange-50 border-orange-200 text-orange-800',
-            red: 'bg-red-50 border-red-200 text-red-800',
-            gray: 'bg-gray-100 border-gray-300 text-gray-400',
-          };
-          
-          const theme = colorClasses[sensor.color] || colorClasses.green;
-
-          return (
-            <div 
-              key={index} 
-              className={`p-4 rounded-xl border-2 ${theme} transition-all hover:shadow-md`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm font-semibold opacity-70 uppercase mb-1">
-                    {sensor.variable}
-                  </p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold tracking-tight">
-                      {sensor.value}
-                    </span>
-                    <span className="text-sm font-medium opacity-60">
-                      {sensor.unit}
-                    </span>
-                  </div>
-                </div>
-              </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      {metrics.map((m, i) => {
+        const styles = getCardStyle(m.color, m.text);
+        return (
+          <div key={i} className={`p-4 rounded-lg border shadow-sm transition-all ${styles.container}`}>
+            <h3 className={`text-xs font-bold uppercase mb-1 ${styles.title}`}>{m.label}</h3>
+            <div className="flex items-end">
+              <span className={`text-2xl font-bold mr-1 ${styles.value}`}>{getValue(m.value)}</span>
+              <span className={`text-xs mb-1 ${styles.unit}`}>{isOffline ? '' : m.unit}</span>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -1,55 +1,115 @@
-import mockData from '../mocks/mock_measurements.json';
+import { supabase } from '../../../api/supabaseClient';
 
-// Simular retraso de red (para que parezca real)
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// 1. OBTENER LISTA DE ESTACIONES
+export const getAllStations = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('estacion')
+      .select('*')
+      .order('estacion_id');
 
-/**
- * Obtiene el estado actual de la estación 
- 
- */
-export const getLatestMeasurements = async (stationId) => {
-  // Simulamos una espera de medio segundo
-  await delay(500);
-
-  // A. Creamos una COPIA de los datos base del JSON.
-  // Usamos {...} para no modificar el archivo original, sino trabajar sobre una copia temporal.
-  let responseData = { ...mockData.latest };
-
-  // B. Buscamos en la lista de estaciones cuál fue la que seleccionó el usuario.
-  // "Number(stationId)" asegura que comparemos número con número (ej: 3 === 3).
-  const stationInfo = mockData.stations_list.find(s => s.id === Number(stationId));
-
-  // C. Si encontramos la estación en la lista, actualizamos la copia de los datos.
-  if (stationInfo) {
-    // Sobrescribimos el nombre y el estado para que coincidan con los que se ve en la lista.
-    responseData.station_name = stationInfo.name;
-    responseData.status = stationInfo.status; // 
+    if (error) throw error;
     
-    // D. Lógica Extra: Si la estación está "Offline", hacemos que los sensores se vean apagados.
-    if (stationInfo.status === 'offline') {
-       // Recorremos los sensores y les ponemos valor 0 y color gris.
-       responseData.sensors = responseData.sensors.map(s => ({
-         ...s, 
-         value: "--",
-         color: 'gray' // Esto hará que la tarjeta se vea gris en pantalla
-       }));
-    }
+    // Mapeamos los datos de SQL a formato React
+    return data.map(s => ({
+      id: s.estacion_id,
+      name: s.nombre_estacion,
+      status: s.estado, 
+      last_reading: new Date().toLocaleTimeString() 
+    }));
+  } catch (error) {
+    console.error("Error cargando estaciones:", error);
+    return [];
   }
-  // Devolvemos los datos ya modificados y corregidos
-  return responseData;
-}
-/**
- * Obtiene el historial de mediciones (Para la Tabla y Gráfica)
- */
-export const getHistory = async (stationId) => {
-  await delay(800); 
-  return mockData.history;
 };
 
-  /**
- * Obtiene la lista de todas las estaciones (Para la vista general)
- */
-export const getAllStations = async () => {
-  await delay(300);
-  return mockData.stations_list;
+// 2. OBTENER ÚLTIMA MEDICIÓN (KPIs)
+export const getLatestMeasurements = async (stationId) => {
+  try {
+    // A. Traer info de la estación
+    const { data: station } = await supabase
+      .from('estacion')
+      .select('*')
+      .eq('estacion_id', stationId)
+      .single();
+
+    // B. Traer la última lectura con sus sensores
+    const { data: report } = await supabase
+      .from('reporte_estacion')
+      .select(`
+        fecha_medicion,
+        reporte_sensor (
+          valor,
+          variable ( nombre, unidad )
+        )
+      `)
+      .eq('estacion_id', stationId)
+      .order('fecha_medicion', { ascending: false })
+      .limit(1)
+      .single();
+
+    // Si no hay datos, devolvemos estructura vacía
+    if (!station) return null;
+    if (!report) return { 
+        station_name: station.nombre_estacion, 
+        status: station.estado, 
+        sensors: [] 
+    };
+
+    // C. Formatear para las tarjetas
+    return {
+      station_name: station.nombre_estacion,
+      status: station.estado,
+      timestamp: report.fecha_medicion,
+      sensors: report.reporte_sensor.map(r => ({
+        variable: r.variable.nombre,
+        value: station.estado === 'offline' ? '--' : r.valor, // lógica offline
+        unit: r.variable.unidad,
+        color: station.estado === 'offline' ? 'gray' : (r.valor > 50 ? 'orange' : 'green')
+      }))
+    };
+
+  } catch (error) {
+    console.error("Error cargando última medición:", error);
+    return null;
+  }
+};
+
+// 3. OBTENER HISTORIAL (Gráfica y Tabla)
+export const getHistory = async (stationId) => {
+  try {
+    const { data: reports } = await supabase
+      .from('reporte_estacion')
+      .select(`
+        fecha_medicion,
+        reporte_sensor (
+          valor,
+          variable ( nombre, unidad )
+        )
+      `)
+      .eq('estacion_id', stationId)
+      .order('fecha_medicion', { ascending: false })
+      .limit(20);
+
+    if (!reports) return [];
+
+    let history = [];
+    
+    reports.forEach(rep => {
+      rep.reporte_sensor.forEach(sensor => {
+        history.push({
+          timestamp: rep.fecha_medicion,
+          variable: sensor.variable.nombre,
+          value: sensor.valor,
+          unit: sensor.variable.unidad
+        });
+      });
+    });
+
+    return history.reverse(); // Ordenar cronológicamente
+
+  } catch (error) {
+    console.error("Error cargando historial:", error);
+    return [];
+  }
 };
