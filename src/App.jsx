@@ -1,16 +1,12 @@
 import React from 'react';
-import UserList from './components/UserList';
-import './App.css';
+import './index.css';
+
+import MeasurementsPage from './features/measurements/measurementsPage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Supabase Integration Example</h1>
-      </header>
-      <main>
-        <UserList />
-      </main>
+    <div className="min-h-screen bg-gray-50">
+      <MeasurementsPage />
     </div>
   );
 }

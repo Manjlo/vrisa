@@ -1,19 +1,42 @@
 {
-  "stations": [
-    {
-      "station_id": "ST001",
-      "name": "Norte Cali",
-      "measurements": [
-        {
-          "variable": "PM25",
-          "unit": "µg/m³",
-          "values": [
-            { "value": 12, "timestamp": "2025-02-10T12:00:00Z" },
-            { "value": 18, "timestamp": "2025-02-10T13:00:00Z" },
-            { "value": 22, "timestamp": "2025-02-10T14:00:00Z" }
-          ]
-        }
-      ]
-    }
+  "stations_list": [
+    { "id": 1, "name": "Norte Cali - Flora Industrial", "status": "online", "last_reading": "2025-02-12 14:00" },
+    { "id": 2, "name": "Sur Cali - Univalle", "status": "online", "last_reading": "2025-02-12 14:00" },
+    { "id": 3, "name": "Centro - CAM", "status": "offline", "last_reading": "2025-02-10 08:00" },
+    { "id": 4, "name": "Oeste - Aguacatal", "status": "online", "last_reading": "2025-02-12 13:55" }
+  ],
+  
+  "latest": {
+    "station_id": 1,
+    "station_name": "Norte Cali - Flora Industrial",
+    "timestamp": "2025-02-12T14:00:00Z",
+    "status": "online",
+    "sensors": [
+      { "variable": "PM2.5", "value": 32.5, "unit": "µg/m³", "color": "yellow" },
+      { "variable": "PM10", "value": 54.2, "unit": "µg/m³", "color": "green" },
+      { "variable": "O3", "value": 21.0, "unit": "ppb", "color": "green" },
+      { "variable": "NO2", "value": 13.5, "unit": "ppb", "color": "green" },
+      { "variable": "CO", "value": 0.8, "unit": "ppm", "color": "green" },
+      { "variable": "SO2", "value": 4.1, "unit": "ppb", "color": "green" }
+    ]
+  },
+  "history": [
+    { "id": 101, "timestamp": "2025-02-12T08:00:00", "variable": "PM2.5", "value": 19, "unit": "µg/m³" },
+    { "id": 102, "timestamp": "2025-02-12T09:00:00", "variable": "PM2.5", "value": 24, "unit": "µg/m³" },
+    { "id": 103, "timestamp": "2025-02-12T10:00:00", "variable": "PM2.5", "value": 31, "unit": "µg/m³" },
+    { "id": 104, "timestamp": "2025-02-12T11:00:00", "variable": "PM2.5", "value": 28, "unit": "µg/m³" },
+    { "id": 105, "timestamp": "2025-02-12T12:00:00", "variable": "PM2.5", "value": 32.5, "unit": "µg/m³" },
+    
+    { "id": 201, "timestamp": "2025-02-12T08:00:00", "variable": "PM10", "value": 40, "unit": "µg/m³" },
+    { "id": 202, "timestamp": "2025-02-12T09:00:00", "variable": "PM10", "value": 48, "unit": "µg/m³" },
+    { "id": 203, "timestamp": "2025-02-12T10:00:00", "variable": "PM10", "value": 55, "unit": "µg/m³" },
+    { "id": 204, "timestamp": "2025-02-12T11:00:00", "variable": "PM10", "value": 52, "unit": "µg/m³" },
+    { "id": 205, "timestamp": "2025-02-12T12:00:00", "variable": "PM10", "value": 54.2, "unit": "µg/m³" },
+
+    { "id": 301, "timestamp": "2025-02-12T08:00:00", "variable": "O3", "value": 15, "unit": "ppb" },
+    { "id": 302, "timestamp": "2025-02-12T09:00:00", "variable": "O3", "value": 18, "unit": "ppb" },
+    { "id": 303, "timestamp": "2025-02-12T10:00:00", "variable": "O3", "value": 22, "unit": "ppb" },
+    { "id": 304, "timestamp": "2025-02-12T11:00:00", "variable": "O3", "value": 20, "unit": "ppb" },
+    { "id": 305, "timestamp": "2025-02-12T12:00:00", "variable": "O3", "value": 21.0, "unit": "ppb" }
   ]
 }

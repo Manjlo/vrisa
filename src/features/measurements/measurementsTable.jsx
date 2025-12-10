@@ -1,85 +1,62 @@
-import React from "react";
-import { useMeasurements } from "./hooks/useMeasurements";
+import React from 'react';
 
-const MeasurementsTable = ({ stationId = "ST001" }) => {
-  const { data, loading } = useMeasurements(stationId);
+const MeasurementsTable = ({ data }) => {
+  // 1. Si no hay datos, mostramos mensaje
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 h-80 flex items-center justify-center">
+        <p className="text-gray-400">No hay registros históricos</p>
+      </div>
+    );
+  }
 
-  if (loading) return <p>Cargando...</p>;
-
- const rows = data.flatMap((serie) =>
-    serie.values.map((v) => ({
-      variable: serie.variable,
-      unit: serie.unit,
-      value: v.value,
-      timestamp: v.timestamp,
-    }))
-  );
+  // Función para formatear la fecha
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleString('es-CO', { 
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+  };
 
   return (
-    <div
-      style={{
-        background: "#FFF",
-        padding: "20px",
-        borderRadius: "12px",
-        border: "1px solid #E5E7EB",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-      }}
-    >
-      <h3
-        style={{
-          marginBottom: "16px",
-          fontSize: "18px",
-          fontWeight: "600",
-          color: "#111827",
-        }}
-      >
-        Histórico de Mediciones
-      </h3>
-
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: "14px",
-          color: "#111827",
-        }}
-      >
-        <thead>
-          <tr style={{ background: "#F9FAFB", textAlign: "left" }}>
-            <th style={{ padding: "12px", borderBottom: "1px solid #E5E7EB" }}>
-              Variable
-            </th>
-            <th style={{ padding: "12px", borderBottom: "1px solid #E5E7EB" }}>
-              Valor
-            </th>
-            <th style={{ padding: "12px", borderBottom: "1px solid #E5E7EB" }}>
-              Unidad
-            </th>
-            <th style={{ padding: "12px", borderBottom: "1px solid #E5E7EB" }}>
-              Timestamp
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {rows.map((r, i) => (
-            <tr key={i}>
-              <td style={{ padding: "12px", borderBottom: "1px solid #F3F4F6" }}>
-                {r.variable}
-              </td>
-              <td style={{ padding: "12px", borderBottom: "1px solid #F3F4F6" }}>
-                {r.value}
-              </td>
-              <td style={{ padding: "12px", borderBottom: "1px solid #F3F4F6" }}>
-                {r.unit}
-              </td>
-              <td style={{ padding: "12px", borderBottom: "1px solid #F3F4F6" }}>
-                {new Date(r.timestamp).toLocaleString()}
-              </td>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+      <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+        <h2 className="text-lg font-bold text-gray-800">Historial Detallado</h2>
+        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+          Descargar CSV
+        </button>
+      </div>
+      
+      <div className="overflow-x-auto max-h-80">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-gray-50 sticky top-0 z-10">
+            <tr>
+              <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
+              <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Variable</th>
+              <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Valor</th>
+              <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Unidad</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {data.map((row, index) => (
+              <tr key={index} className="hover:bg-gray-50 transition-colors">
+                <td className="p-4 text-sm text-gray-600 whitespace-nowrap">
+                  {formatDate(row.timestamp)}
+                </td>
+                <td className="p-4 text-sm font-medium text-gray-800">
+                  {row.variable}
+                </td>
+                <td className="p-4 text-sm font-bold text-gray-900">
+                  {row.value}
+                </td>
+                <td className="p-4 text-sm text-gray-500">
+                  {row.unit}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
