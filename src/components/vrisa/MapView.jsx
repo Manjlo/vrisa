@@ -14,31 +14,38 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 const { Title, Text } = Typography;
 
 const createAqiIcon = (station) => {
-  const { color, textColor } = getAqiInfo(
-    station.measurements.pm25,
-    station.status
-  );
+  const { color, textColor } = getAqiInfo(station.measurements.pm25);
   const value =
-    station.status === 'online' ? Math.round(station.measurements.pm25) : '?';
+    typeof station.measurements.pm25 === 'number'
+      ? Math.round(station.measurements.pm25)
+      : '?';
+
+  // Estilo base del icono
+  const style = {
+    backgroundColor: color,
+    color: textColor,
+    borderRadius: '50%',
+    width: '32px',
+    height: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    border: '2px solid white',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
+    cursor: 'pointer',
+    transition: 'opacity 0.3s ease',
+  };
+
+  // Si la estación no está online, la hacemos gris y semitransparente
+  if (station.status?.trim().toLowerCase() !== 'online') {
+    style.backgroundColor = '#8c8c8c'; // Gris
+    style.opacity = 0.6;
+  }
 
   return (
-    <div
-      style={{
-        backgroundColor: color,
-        color: textColor,
-        borderRadius: '50%',
-        width: '32px',
-        height: '32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        border: '2px solid white',
-        boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
-        cursor: 'pointer',
-      }}
-    >
+    <div style={style}>
       {value}
     </div>
   );
@@ -88,44 +95,12 @@ const MapView = ({ stations, onStationSelect }) => {
             longitude={station.lng}
             latitude={station.lat}
             anchor="bottom"
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              setPopupInfo(station);
-            }}
           >
-            {createAqiIcon(station)}
+            <div onClick={() => onStationSelect(station)}>
+              {createAqiIcon(station)}
+            </div>
           </Marker>
         ))}
-
-        {popupInfo && (
-          <Popup
-            anchor="top"
-            longitude={Number(popupInfo.lng)}
-            latitude={Number(popupInfo.lat)}
-            onClose={() => setPopupInfo(null)}
-            closeOnClick={false}
-          >
-            <div style={{ padding: '5px' }}>
-              <Title level={5}>{popupInfo.name}</Title>
-              <Text>
-                <strong>Estado:</strong>{' '}
-                {
-                  getAqiInfo(popupInfo.measurements.pm25, popupInfo.status)
-                    .level
-                }
-              </Text>
-              <br />
-              <Button
-                type="primary"
-                size="small"
-                onClick={() => onStationSelect(popupInfo)}
-                style={{ marginTop: '10px' }}
-              >
-                Ver Detalles
-              </Button>
-            </div>
-          </Popup>
-        )}
       </Map>
     </div>
   );
