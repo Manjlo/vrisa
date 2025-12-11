@@ -1,13 +1,26 @@
-import React from 'react';
-import { Form, Input, Button } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Button, Alert } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuth } from 'src/hooks/useAuth';
+import { useAuth } from 'src/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const onFinish = (values) => {
-    login(values);
+  const onFinish = async (values) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await login(values);
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -17,23 +30,25 @@ const LoginForm = () => {
       layout="vertical"
       requiredMark={false}
     >
+      {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 24 }} />}
+      
       <Form.Item
         name="email"
-        rules={[{ required: true, type: 'email', message: 'Please input your email!' }]}
+        rules={[{ required: true, type: 'email', message: 'Por favor, introduce tu email' }]}
       >
         <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
       </Form.Item>
 
       <Form.Item
         name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
+        rules={[{ required: true, message: 'Por favor, introduce tu contraseña' }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
+        <Input.Password prefix={<LockOutlined />} placeholder="Contraseña" size="large" />
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit" block size="large">
-          Login
+        <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+          Iniciar Sesión
         </Button>
       </Form.Item>
     </Form>

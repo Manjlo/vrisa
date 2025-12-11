@@ -1,49 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Layout, Card, Typography, Alert, message } from 'antd';
+import { Typography } from 'antd';
 import LoginForm from 'src/features/auth/LoginForm';
-import '../styles/global.css';
+import AuthLayout from 'src/components/shared/AuthLayout';
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const Login = () => {
-  const [messageApi, contextHolder] = message.useMessage();
-
-  useEffect(() => {
-    // añadimos messageApi en dependencias para evitar warnings de eslint
-    messageApi.success('esto es una alerta');
-  }, [messageApi]);
-
   return (
-    <Layout style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
-      <Content
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '2rem',
-        }}
-      >
-        {contextHolder}
-        <Alert type="success" message="Esto es una alerta" />
-        <Card
-          style={{ width: 400, textAlign: 'center' }}
-          className="card--custom"
-        >
-          <Title
-            level={2}
-            style={{ color: 'var(--color-text)', marginBottom: '2rem' }}
-          >
-            Login
-          </Title>
-          <LoginForm />
-          <Text style={{ marginTop: '1rem', display: 'block' }}>
-            Don't have an account? <Link to="/register">Register now!</Link>
-          </Text>
-        </Card>
-      </Content>
-    </Layout>
+    <AuthLayout title="Iniciar Sesión">
+      <LoginForm />
+      <Text style={{ marginTop: '1rem', display: 'block', textAlign: 'center' }}>
+        ¿No tienes una cuenta? <Link to="/register">¡Regístrate ahora!</Link>
+      </Text>
+    </AuthLayout>
   );
 };
 

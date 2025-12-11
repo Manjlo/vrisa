@@ -1,146 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Layout, Form, Input, Button, Typography, Card } from 'antd';
-import {
-  MailOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  LockOutlined,
-} from '@ant-design/icons';
-import '../styles/global.css';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Typography, Alert } from 'antd';
+import RegisterForm from 'src/features/auth/RegisterForm';
+import AuthLayout from 'src/components/shared/AuthLayout';
+import { supabase } from 'src/api/supabaseClient';
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const Register = () => {
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-    // Handle registration logic here
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (values) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            full_name: values.name,
+            username: values.username,
+            phone: values.phone,
+          },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+      
+      // You might want to show a message to check email for confirmation
+      navigate('/login');
+
+    } catch (err) {
+      console.error('Supabase registration error:', err);
+      setError(`Error: ${err.message}. Status: ${err.status || 'N/A'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Content
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '2rem',
-        }}
-      >
-<Card style={{ width: 400, textAlign: 'center' }} className="card--custom">
-          <Title
-            level={2}
-            style={{ color: 'var(--color-text)', marginBottom: '2rem' }}
-          >
-            Create Account
-          </Title>
-          <Form
-            name="register"
-            onFinish={onFinish}
-            layout="vertical"
-            requiredMark={false}
-          >
-            <Form.Item
-              name="name"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your name!',
-                  whitespace: true,
-                },
-              ]}
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Name"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  type: 'email',
-                  message: 'Please input a valid email!',
-                },
-              ]}
-            >
-              <Input
-                prefix={<MailOutlined />}
-                placeholder="Email"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="phone"
-              rules={[
-                { required: true, message: 'Please input your phone number!' },
-              ]}
-            >
-              <Input
-                prefix={<PhoneOutlined />}
-                placeholder="Phone"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[
-                { required: true, message: 'Please input your password!' },
-              ]}
-              hasFeedback
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Password"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="confirm"
-              dependencies={['password']}
-              hasFeedback
-              rules={[
-                { required: true, message: 'Please confirm your password!' },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        'The two passwords that you entered do not match!'
-                      )
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Confirm Password"
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block size="large">
-                Register
-              </Button>
-            </Form.Item>
-          </Form>
-          <Text style={{ marginTop: '1rem', display: 'block' }}>
-            Already have an account? <Link to="/login">Log in!</Link>
-          </Text>
-        </Card>
-      </Content>
-    </Layout>
+    <AuthLayout title="Crear Cuenta">
+      {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 24 }} />}
+      <RegisterForm onFinish={handleRegister} loading={loading} />
+      <Text style={{ marginTop: '1rem', display: 'block', textAlign: 'center' }}>
+        ¿Ya tienes una cuenta? <Link to="/login">¡Inicia sesión!</Link>
+      </Text>
+    </AuthLayout>
   );
 };
 
