@@ -14,3 +14,23 @@ export const getStationsData = async () => {
 
   return data;
 };
+
+/**
+ * Fetches the historical measurement data for a specific station.
+ * @param {number} stationId The ID of the station.
+ * @returns {Promise<Array<object>>} A list of historical measurements.
+ */
+export const getStationHistory = async (stationId) => {
+  if (!stationId) throw new Error('Station ID is required.');
+
+  const { data, error } = await supabase.rpc('get_station_history_full_qa', {
+    p_estacion_id: stationId,
+  });
+
+  if (error) {
+    console.error('Error fetching station history:', error);
+    throw new Error(error.message);
+  }
+
+  return data;
+};

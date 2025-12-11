@@ -15,7 +15,7 @@ const StationList = ({ stations, onStationSelect, onViewOnMap }) => {
     .filter((s) => s?.name?.toLowerCase()?.includes(searchText.toLowerCase()))
     .filter((s) => {
       if (aqiFilter === 'all') return true;
-      const level = getAqiInfo(s.measurements.pm25, s.status).level;
+      const { level } = getAqiInfo(s.measurements.pm25);
       if (aqiFilter === 'Dañina') return level.startsWith('Dañina');
       return level === aqiFilter;
     });
@@ -34,10 +34,9 @@ const StationList = ({ stations, onStationSelect, onViewOnMap }) => {
       title: 'AQI (PM₂.₅)',
       dataIndex: 'measurements',
       key: 'aqi',
-      render: (measurements, record) => {
+      render: (measurements) => {
         const { level, color, textColor } = getAqiInfo(
-          measurements.pm25,
-          record.status
+          measurements.pm25
         );
         return (
           <Tag color={color} style={{ color: textColor }}>
@@ -45,7 +44,7 @@ const StationList = ({ stations, onStationSelect, onViewOnMap }) => {
           </Tag>
         );
       },
-      sorter: (a, b) => a.measurements.pm25 - b.measurements.pm25,
+      sorter: (a, b) => (a.measurements?.pm25 ?? -1) - (b.measurements?.pm25 ?? -1),
     },
     {
       title: 'Acciones',
