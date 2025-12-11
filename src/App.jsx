@@ -8,53 +8,25 @@ import StationDetail from 'src/pages/app/StationDetail';
 import MapView from 'src/pages/app/MapView';
 import Alerts from 'src/pages/app/Alerts';
 import ProtectedRoute from 'src/components/shared/ProtectedRoute';
+import AppLayout from 'src/components/shared/AppLayout';
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
-        path="/app"
+        path="/"
         element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
+          <AppLayout />
         }
-      />
-      <Route
-        path="/app/stations"
-        element={
-          <ProtectedRoute>
-            <StationsList />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/app/stations/:id"
-        element={
-          <ProtectedRoute>
-            <StationDetail />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/app/map"
-        element={
-          <ProtectedRoute>
-            <MapView />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/app/alerts"
-        element={
-          <ProtectedRoute>
-            <Alerts />
-          </ProtectedRoute>
-        }
-      />
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="stations" element={<StationsList />} />
+        <Route path="stations/:id" element={<StationDetail />} />
+        <Route path="map" element={<MapView />} />
+        <Route path="alerts" element={<Alerts />} />
+      </Route>
     </Routes>
   );
 }

@@ -14,7 +14,14 @@ export const useStations = () => {
       setLoading(true);
       setError(null);
       const data = await getStations();
-      setStations(data);
+      const transformedData = data.map(station => ({
+        ...station,
+        lat: station.latitud,
+        lng: station.longitud,
+        measurements: { pm25: Math.floor(Math.random() * 100) }, // Placeholder
+        status: 'online' // Placeholder
+      }));
+      setStations(transformedData);
     } catch (err) {
       setError(err.message || 'Ocurrió un error al cargar las estaciones');
     } finally {
