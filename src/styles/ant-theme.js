@@ -26,13 +26,13 @@
 export const theme = {
   token: {
     // Seed Tokens
-    colorPrimary: '#4EADF5',
+    colorPrimary: '#3DD5C9',
     colorSuccess: '#43C87B',
     colorWarning: '#F5A623',
     colorError: '#E85151',
-    colorInfo: '#4EADF5',
+    colorInfo: '#3DD5C9',
     colorTextBase: '#252A2E',
-    colorBgBase: '#FFFFFF',
+    colorBgBase: '#F5F9F8',
     fontFamily: 'Inter var, Inter, "Segoe UI", Roboto, system-ui, -apple-system, sans-serif',
     fontSize: 16,
     borderRadius: 12,
@@ -57,3 +57,14 @@ export const theme = {
   },
 };
 
+/**
+ * Function to apply the theme to AntD's ConfigProvider.
+ * This is a helper to illustrate how to use the theme object.
+ *
+ * @param {React.ReactNode} children - The child components to be wrapped.
+ * @returns {React.ReactElement} - The ConfigProvider with the theme applied.
+ */
+export const ThemedConfigProvider = ({ children }) => {
+  const { ConfigProvider } = require('antd');
+  return <ConfigProvider theme={theme}>{children}</ConfigProvider>;
+};

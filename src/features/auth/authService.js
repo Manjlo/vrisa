@@ -1,41 +1,18 @@
-// src/features/auth/authService.js
-import { supabase } from 'src/api/supabaseClient';
+import api from 'src/services/api';
 
-export const login = async ({ email, password }) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+export const login = async (credentials) => {
+  // In a real app, you'd make a POST request to your API
+  // For this prototype, we'll just simulate a login
+  console.log('Logging in with:', credentials);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ user: { name: 'Test User' }, token: 'fake-jwt-token' });
+    }, 1000);
   });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
 };
 
 export const logout = async () => {
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-};
-
-export const getSession = async () => {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data.session;
-};
-
-export const onAuthStateChange = (callback) => {
-  const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-    callback(session);
-  });
-
-  return () => {
-    authListener.subscription.unsubscribe();
-  };
+  // In a real app, you might invalidate the token on the server
+  console.log('Logging out');
+  return Promise.resolve();
 };

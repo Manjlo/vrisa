@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStationsData } from 'src/services/stationService';
+import { getStations } from '../services/stationService';
 
 /**
- * Hook para gestionar la lógica de obtención y estado de las estaciones desde la BD.
+ * Hook para gestionar la lógica de obtención y estado de las estaciones.
  */
 export const useStations = () => {
   const [stations, setStations] = useState([]);
@@ -13,7 +13,7 @@ export const useStations = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getStationsData();
+      const data = await getStations();
       setStations(data);
     } catch (err) {
       setError(err.message || 'Ocurrió un error al cargar las estaciones');
@@ -30,6 +30,6 @@ export const useStations = () => {
     stations,
     loading,
     error,
-    reloadStations: fetchStations,
+    reloadStations: fetchStations, // Función para recargar los datos
   };
 };

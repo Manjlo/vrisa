@@ -18,12 +18,12 @@
 
 :root {
   /* Color Palette */
-  --color-primary: #4EADF5; /* Sky Blue */
-  --color-primary-700: #1E4E7C; /* Dark Blue */
-  --color-bg: #FFFFFF; /* White */
-  --color-accent: #BDE0FE; /* Light Blue */
+  --color-primary: #3DD5C9;
+  --color-primary-700: #0A3D3B;
+  --color-bg: #F5F9F8;
+  --color-accent: #A9E4EB;
   --color-text: #252A2E;
-  --color-muted: #F9F9F9; /* Light gray for cards */
+  --color-muted: #D9E4E2;
 
   /* Semantic Colors */
   --color-good: #43C87B;
@@ -40,18 +40,22 @@
   --fs-2xl: 24px;
   --fs-3xl: 32px;
 
-  /* Styling */
+  /* Glassmorphism */
   --glass-blur: 10px;
-  --glass-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-border-light: 1px solid rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
   --glass-border-radius: 16px;
 }
 
 /* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0d1117;
+    --color-bg: #051414;
     --color-text: #E6F7F5;
-    --color-muted: #161b22;
+    --color-muted: #1a3d3b;
+    --glass-bg-light: rgba(10, 61, 59, 0.12);
+    --glass-border-light: 1px solid rgba(10, 61, 59, 0.1);
   }
 }
 
@@ -63,30 +67,14 @@ body {
 
 /* Utility Classes */
 
-.app-header--glass {
-  background: rgba(255, 255, 255, 0.8);
+.app-header--glass,
+.card--glass {
+  background: var(--glass-bg-light);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-bottom: 1px solid #EAEAEA;
-  box-shadow: none;
-  border-radius: 0;
-}
-
-.card--custom {
-  background-color: var(--color-muted);
-  border: 1px solid #EAEAEA;
-  border-radius: var(--glass-border-radius);
+  border: var(--glass-border-light);
   box-shadow: var(--glass-shadow);
-}
-
-@media (prefers-color-scheme: dark) {
-  .app-header--glass {
-    background: rgba(13, 17, 23, 0.7);
-    border-bottom: 1px solid var(--color-muted);
-  }
-  .card--custom {
-    border-color: #30363d;
-  }
+  border-radius: var(--glass-border-radius);
 }
 
 .metric {

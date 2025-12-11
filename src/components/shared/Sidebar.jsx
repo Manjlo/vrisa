@@ -19,16 +19,16 @@ const Sidebar = () => {
         style={{ height: '100%', borderRight: 0 }}
       >
         <Menu.Item key="1" icon={<DashboardOutlined />}>
-          <Link to="/">Dashboard</Link>
+          <Link to="/app">Dashboard</Link>
         </Menu.Item>
         <Menu.Item key="2" icon={<UnorderedListOutlined />}>
-          <Link to="/stations">Stations</Link>
+          <Link to="/app/stations">Stations</Link>
         </Menu.Item>
         <Menu.Item key="3" icon={<GlobalOutlined />}>
-          <Link to="/map">Map</Link>
+          <Link to="/app/map">Map</Link>
         </Menu.Item>
         <Menu.Item key="4" icon={<AlertOutlined />}>
-          <Link to="/alerts">Alerts</Link>
+          <Link to="/app/alerts">Alerts</Link>
         </Menu.Item>
       </Menu>
     </Sider>
